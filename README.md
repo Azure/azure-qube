@@ -1,3 +1,12 @@
+# Azure Scripts for PipelineFx Qube Integration
+
+This repository contains sample and helper scripts to deploy Qube on Microsoft Azure.
+
+Scripts\qube-bootstrap.ps1
+
+This script will download and package all the Qube worker dependencies, include Qube.
+The dependencies will be added to application packages (a ZIP) and uploaded to the
+specified Azure Batch account.
 
 # Contributing
 
