@@ -95,7 +95,17 @@ if (!$skipInstall)
 
 if ('' -ne $workerHostGroups)
 {
-    (Get-Content 'C:\ProgramData\Pfx\Qube\qb.conf') -replace '#worker_groups =.*',"worker_groups = $workerHostGroups" | Set-Content -Force 'C:\ProgramData\Pfx\Qube\qb.conf'
+    $currentGroups = Get-Content 'C:\ProgramData\Pfx\Qube\qb.conf' | select-string -pattern '^worker_groups =.*' | % {$_.Matches} | % {$_.Value}
+    if ($currentGroups -and !$currentGroups.Contains($workerHostGroups))
+    {
+        # There's already groups set, let's append
+        (Get-Content 'C:\ProgramData\Pfx\Qube\qb.conf') -replace '^worker_groups =.*',"$currentGroups,$workerHostGroups" | Set-Content -Force 'C:\ProgramData\Pfx\Qube\qb.conf'
+    }
+    else
+    {
+        # No groups
+        (Get-Content 'C:\ProgramData\Pfx\Qube\qb.conf') -replace '^#worker_groups =.*',"worker_groups = $workerHostGroups" | Set-Content -Force 'C:\ProgramData\Pfx\Qube\qb.conf'
+    }
 }
 
 Start-Service -Name "qubeworker"
