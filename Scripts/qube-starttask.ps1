@@ -30,6 +30,9 @@ if ($env:AZ_BATCH_SOFTWARE_ENTITLEMENT_TOKEN)
 [Environment]::SetEnvironmentVariable("FLEXLM_TIMEOUT", "10000000", "Machine")
 $env:FLEXLM_TIMEOUT = "10000000"
 
+$qbConfDir = 'C:\ProgramData\Pfx\Qube'
+$qbConf = "$qbConfDir\qb.conf"
+
 if (!$skipInstall)
 {
     $python = Get-ChildItem . | where {$_.Name -like "python-2.7.*.amd64.msi"}
@@ -60,7 +63,7 @@ if (!$skipInstall)
         (Get-Content qb.conf) -replace '^qb_supervisor.*',"qb_supervisor = $qubeSupervisorIp" | Set-Content qb.conf
     }
 
-    copy qb.conf 'C:\ProgramData\Pfx\Qube'
+    copy qb.conf $qbConfDir
 
     # Install Qube Core
     $qubecore = Get-ChildItem . | where {$_.Name -like "qube-core-*.msi"}
@@ -95,16 +98,26 @@ if (!$skipInstall)
 
 if ('' -ne $workerHostGroups)
 {
-    $currentGroups = Get-Content 'C:\ProgramData\Pfx\Qube\qb.conf' | select-string -pattern '^worker_groups =.*' | % {$_.Matches} | % {$_.Value}
+    $currentGroups = Get-Content $qbConf | select-string -pattern '^worker_groups = (.*)' | % {$_.Matches} | % {$_.Groups[1].Value.Trim()}
     if ($currentGroups -and !$currentGroups.Contains($workerHostGroups))
     {
+        Write-Host "Current worker groups: $currentGroups"
+        $groups = $currentGroups.Split(',')
+        foreach ($g in $workerHostGroups.Split(',')) {
+            if (!$groups.Contains($g))
+            {
+                Write-Host "Adding worker group: $g"
+                $groups += $g
+            }
+        }
         # There's already groups set, let's append
-        (Get-Content 'C:\ProgramData\Pfx\Qube\qb.conf') -replace '^worker_groups =.*',"$currentGroups,$workerHostGroups" | Set-Content -Force 'C:\ProgramData\Pfx\Qube\qb.conf'
+        $newWorkerGroups = $groups -join ','
+        (Get-Content $qbConf) -replace '^worker_groups =.*',"worker_groups = $newWorkerGroups" | Set-Content -Force $qbConf
     }
     else
     {
         # No groups
-        (Get-Content 'C:\ProgramData\Pfx\Qube\qb.conf') -replace '^#worker_groups =.*',"worker_groups = $workerHostGroups" | Set-Content -Force 'C:\ProgramData\Pfx\Qube\qb.conf'
+        (Get-Content $qbConf) -replace '^#worker_groups =.*',"worker_groups = $workerHostGroups" | Set-Content -Force $qbConf
     }
 }
 
