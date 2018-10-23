@@ -19,6 +19,9 @@ Param(
     [switch]$skipInstall
 )
 
+# Stop on any errors
+$ErrorActionPreference = "Stop"
+
 # Set any app licenses system wide.
 if ($env:AZ_BATCH_SOFTWARE_ENTITLEMENT_TOKEN)
 {
