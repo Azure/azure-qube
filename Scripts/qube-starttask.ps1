@@ -130,5 +130,5 @@ Start-Service -Name "qubeworker"
 if ($env:APP_INSIGHTS_APP_ID -and $env:APP_INSIGHTS_INSTRUMENTATION_KEY)
 {
     # Install Batch Insights
-    iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/smith1511/batch-insights/gpu/windows.ps1')) | Out-File batchinsights.log
+    iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/Azure/batch-insights/master/scripts/run-windows.ps1')) | Out-File batchinsights.log
 }
