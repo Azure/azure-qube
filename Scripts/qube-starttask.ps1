@@ -130,5 +130,6 @@ Start-Service -Name "qubeworker"
 if ($env:APP_INSIGHTS_APP_ID -and $env:APP_INSIGHTS_INSTRUMENTATION_KEY)
 {
     # Install Batch Insights
+    $env:BATCH_INSIGHTS_DOWNLOAD_URL = 'https://github.com/Azure/batch-insights/releases/download/v1.1.0/batch-insights.exe'
     iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/Azure/batch-insights/master/scripts/run-windows.ps1')) | Out-File batchinsights.log
 }
