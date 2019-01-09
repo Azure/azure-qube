@@ -52,7 +52,7 @@ if (!$skipInstall)
 
     # Make sure Python is in the path
     $paths = ${env:PATH}.ToLower().Split(";")
-    if (!$paths.Contains('C:\python27'))
+    if (!$paths.Contains('c:\python27'))
     {
         Write-Host "Adding Python to the path."
         [Environment]::SetEnvironmentVariable("PATH", "C:\Python27;${env:PATH}", "Machine")
