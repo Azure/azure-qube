@@ -55,7 +55,7 @@ if (!$skipInstall)
     if (!$paths.Contains('c:\python27'))
     {
         Write-Host "Adding Python to the path."
-        [Environment]::SetEnvironmentVariable("PATH", "C:\Python27;${env:PATH}", "Machine")
+        [Environment]::SetEnvironmentVariable("PATH", "C:\Python27;C:\Python27\Scripts;${env:PATH}", "Machine")
     }
 
     New-Item -ItemType Directory -Force -Path 'C:\ProgramData\Pfx\Qube' | Out-Null
