@@ -58,16 +58,6 @@ if (!$skipInstall)
         [Environment]::SetEnvironmentVariable("PATH", "C:\Python27;C:\Python27\Scripts;${env:PATH}", "Machine")
     }
 
-    New-Item -ItemType Directory -Force -Path 'C:\ProgramData\Pfx\Qube' | Out-Null
-
-    # Update the Supervisor IP in qb.conf if specified.
-    if ('' -ne $qubeSupervisorIp)
-    {
-        (Get-Content qb.conf) -replace '^qb_supervisor.*',"qb_supervisor = $qubeSupervisorIp" | Set-Content qb.conf
-    }
-
-    copy qb.conf $qbConfDir
-
     # Install Qube Core
     $qubecore = Get-ChildItem . | where {$_.Name -like "qube-core-*.msi"}
 
@@ -97,6 +87,19 @@ if (!$skipInstall)
         Write-Host "Installing " $_.FullName
         Start-Process msiexec.exe -ArgumentList "/passive /i $($_.FullName)" -Wait
     }
+
+    # Install custom qb.conf, if it exists
+    if ((Test-Path -Name "qb.conf"))
+    {
+        New-Item -ItemType Directory -Force -Path 'C:\ProgramData\Pfx\Qube' | Out-Null
+        copy qb.conf $qbConfDir
+    }
+}
+
+# Update the Supervisor IP in qb.conf if specified.
+if ('' -ne $qubeSupervisorIp)
+{
+    (Get-Content qb.conf) -replace '^qb_supervisor.*',"qb_supervisor = $qubeSupervisorIp" | Set-Content qb.conf
 }
 
 if ('' -ne $workerHostGroups)
