@@ -89,7 +89,7 @@ if (!$skipInstall)
     }
 
     # Install custom qb.conf, if it exists
-    if ((Test-Path -Name "qb.conf"))
+    if ((Test-Path -Path "qb.conf"))
     {
         New-Item -ItemType Directory -Force -Path 'C:\ProgramData\Pfx\Qube' | Out-Null
         copy qb.conf $qbConfDir
@@ -97,7 +97,7 @@ if (!$skipInstall)
 }
 
 # Update the Supervisor IP in qb.conf if specified.
-if ('' -ne $qubeSupervisorIp -and (Test-Path -Name "C:\ProgramData\Pfx\Qube\qb.conf"))
+if ('' -ne $qubeSupervisorIp -and (Test-Path -Path "C:\ProgramData\Pfx\Qube\qb.conf"))
 {
     (Get-Content 'C:\ProgramData\Pfx\Qube\qb.conf') -replace '^.*qb_supervisor.*',"qb_supervisor = $qubeSupervisorIp" | Set-Content qb.conf
 }
