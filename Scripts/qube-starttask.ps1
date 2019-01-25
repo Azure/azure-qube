@@ -129,7 +129,7 @@ if ($service)
 {
     if ($service.Status -eq 'Running')
     {
-        Stop-Service "qubeworker"
+        Stop-Service -Name "qubeworker" -Force -NoWait
         Start-Sleep -Seconds 5
         Stop-Process -Name "worker" -Force
         Start-Sleep -Seconds 1
