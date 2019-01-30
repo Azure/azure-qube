@@ -99,6 +99,7 @@ if (!$skipInstall)
 # Update the Supervisor IP in qb.conf if specified.
 if ('' -ne $qubeSupervisorIp -and (Test-Path -Path "C:\ProgramData\Pfx\Qube\qb.conf"))
 {
+    Write-Host "Setting the Qube! supervisor to $qubeSupervisorIp"
     (Get-Content 'C:\ProgramData\Pfx\Qube\qb.conf') -replace '^.*qb_supervisor.*',"qb_supervisor = $qubeSupervisorIp" | Set-Content qb.conf
 }
 
@@ -112,17 +113,18 @@ if ('' -ne $workerHostGroups)
         foreach ($g in $workerHostGroups.Split(',')) {
             if (!$groups.Contains($g))
             {
-                Write-Host "Adding worker group: $g"
                 $groups += $g
             }
         }
         # There's already groups set, let's append
         $newWorkerGroups = $groups -join ','
+        Write-Host "Setting worker groups $workerHostGroups"
         (Get-Content $qbConf) -replace '^worker_groups =.*',"worker_groups = $newWorkerGroups" | Set-Content -Force $qbConf
     }
     else
     {
         # No groups
+        Write-Host "Setting worker groups $workerHostGroups"
         (Get-Content $qbConf) -replace '^#worker_groups =.*',"worker_groups = $workerHostGroups" | Set-Content -Force $qbConf
     }
 }
@@ -145,5 +147,5 @@ if ($service)
 if ($env:APP_INSIGHTS_APP_ID -and $env:APP_INSIGHTS_INSTRUMENTATION_KEY)
 {
     # Install Batch Insights
-    iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/smith1511/batch-insights/master/scripts/run-windows.ps1')) | Out-File batchinsights.log
+    iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/Azure/batch-insights/master/scripts/run-windows.ps1')) | Out-File batchinsights.log
 }
